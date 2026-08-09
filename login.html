@@ -2,7 +2,6 @@
 <html lang="ka">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -12,7 +11,6 @@
 
     <title>ChatApp - შესვლა</title>
 
-
     <style>
 
         * {
@@ -21,27 +19,18 @@
             padding: 0;
         }
 
-
         body {
-
             font-family: Arial, sans-serif;
-
             background: #f0f2f5;
-
             min-height: 100vh;
 
             display: flex;
-
             justify-content: center;
-
             align-items: center;
         }
 
-
         .box {
-
             width: 380px;
-
             max-width: 95%;
 
             background: white;
@@ -54,17 +43,12 @@
                 0 10px 30px rgba(0,0,0,0.15);
         }
 
-
         h1 {
-
             text-align: center;
-
             margin-bottom: 25px;
         }
 
-
         input {
-
             width: 100%;
 
             padding: 14px;
@@ -80,15 +64,11 @@
             outline: none;
         }
 
-
         input:focus {
-
             border-color: #1877f2;
         }
 
-
         button {
-
             width: 100%;
 
             padding: 14px;
@@ -106,23 +86,16 @@
             cursor: pointer;
         }
 
-
         button:hover {
-
             background: #0d65d9;
         }
 
-
         button:disabled {
-
             background: #999;
-
             cursor: not-allowed;
         }
 
-
         .link {
-
             display: block;
 
             text-align: center;
@@ -134,9 +107,7 @@
             text-decoration: none;
         }
 
-
         #message {
-
             text-align: center;
 
             margin-top: 15px;
@@ -145,42 +116,34 @@
         }
 
     </style>
-
 </head>
 
 
 <body>
 
-
 <div class="box">
 
-
     <h1>💬 ChatApp</h1>
-
 
     <input
         type="email"
         id="email"
         placeholder="Email"
+        autocomplete="email"
     >
-
 
     <input
         type="password"
         id="password"
         placeholder="პაროლი"
+        autocomplete="current-password"
     >
 
-
     <button id="loginButton">
-
         შესვლა
-
     </button>
 
-
     <div id="message"></div>
-
 
     <a
         class="link"
@@ -189,7 +152,6 @@
         ანგარიში არ გაქვს? დარეგისტრირდი
     </a>
 
-
     <a
         class="link"
         href="index.html"
@@ -197,53 +159,39 @@
         ← მთავარი გვერდი
     </a>
 
-
 </div>
-
 
 
 <script type="module">
 
-
     import { initializeApp }
-
         from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
 
-
     import {
-
         getAuth,
-
         signInWithEmailAndPassword
-
     }
-
     from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
 
+    /* Firebase */
 
     const firebaseConfig = {
-
 
         apiKey:
             "AIzaSyAFkfJ3FPInnW2N0ncFdtJsuUO6mYiottE",
 
-
         authDomain:
             "chatapp-74f6c.firebaseapp.com",
-
 
         projectId:
             "chatapp-74f6c",
 
-
         storageBucket:
             "chatapp-74f6c.firebasestorage.app",
 
-
         messagingSenderId:
             "569419761940",
-
 
         appId:
             "1:569419761940:web:446d6d1981ebd81d705a01"
@@ -251,22 +199,18 @@
     };
 
 
-
     const app =
         initializeApp(firebaseConfig);
-
-
 
     const auth =
         getAuth(app);
 
 
-
     const loginButton =
-        document.getElementById(
-            "loginButton"
-        );
+        document.getElementById("loginButton");
 
+    const message =
+        document.getElementById("message");
 
 
     loginButton.addEventListener(
@@ -275,40 +219,29 @@
     );
 
 
-
     async function loginUser() {
 
-
         const email =
-
             document
                 .getElementById("email")
                 .value
                 .trim();
 
-
         const password =
-
             document
                 .getElementById("password")
                 .value;
 
 
-        const message =
-
-            document
-                .getElementById("message");
-
-
-
-        message.style.color = "red";
-
+        message.textContent = "";
 
 
         if (
             email === "" ||
             password === ""
         ) {
+
+            message.style.color = "red";
 
             message.textContent =
                 "გთხოვ შეავსო ორივე ველი.";
@@ -317,67 +250,63 @@
         }
 
 
-
         try {
 
-
             loginButton.disabled = true;
-
 
             loginButton.textContent =
                 "მიმდინარეობს შესვლა...";
 
 
+            /* Firebase Login */
 
             await signInWithEmailAndPassword(
-
                 auth,
-
                 email,
-
                 password
-
             );
 
 
-
-            message.style.color =
-                "green";
-
+            message.style.color = "green";
 
             message.textContent =
                 "წარმატებით შეხვედი!";
 
 
+            /*
+                GitHub Pages-ზე chat.html-ის
+                სწორი მისამართის შექმნა
+            */
+
+            const currentPath =
+                window.location.pathname;
+
+            const newPath =
+                currentPath.replace(
+                    /login\.html$/,
+                    "chat.html"
+                );
+
 
             setTimeout(() => {
 
                 window.location.href =
-                    "chat.html";
+                    window.location.origin +
+                    newPath;
 
-            }, 700);
-
-
-
-        }
+            }, 500);
 
 
-        catch (error) {
+        } catch (error) {
 
+            console.error(error);
 
-            console.log(error);
-
-
-            message.style.color =
-                "red";
-
+            message.style.color = "red";
 
 
             if (
-
                 error.code ===
                 "auth/invalid-credential"
-
             ) {
 
                 message.textContent =
@@ -385,12 +314,9 @@
 
             }
 
-
             else if (
-
                 error.code ===
                 "auth/user-not-found"
-
             ) {
 
                 message.textContent =
@@ -398,6 +324,25 @@
 
             }
 
+            else if (
+                error.code ===
+                "auth/wrong-password"
+            ) {
+
+                message.textContent =
+                    "პაროლი არასწორია.";
+
+            }
+
+            else if (
+                error.code ===
+                "auth/too-many-requests"
+            ) {
+
+                message.textContent =
+                    "ძალიან ბევრი მცდელობაა. ცოტა ხანს მოიცადე.";
+
+            }
 
             else {
 
@@ -407,22 +352,15 @@
             }
 
 
-
-            loginButton.disabled =
-                false;
-
+            loginButton.disabled = false;
 
             loginButton.textContent =
                 "შესვლა";
-
         }
 
     }
 
-
 </script>
 
-
 </body>
-
 </html>
