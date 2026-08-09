@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>ChatApp - რეგისტრაცია</title>
 
     <style>
@@ -16,6 +17,7 @@
             font-family: Arial, sans-serif;
             background: #f0f2f5;
             min-height: 100vh;
+
             display: flex;
             justify-content: center;
             align-items: center;
@@ -24,10 +26,15 @@
         .box {
             width: 380px;
             max-width: 95%;
+
             background: white;
+
             padding: 35px;
+
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+
+            box-shadow:
+                0 10px 30px rgba(0,0,0,0.15);
         }
 
         h1 {
@@ -37,21 +44,39 @@
 
         input {
             width: 100%;
+
             padding: 14px;
+
             margin-bottom: 15px;
+
             border: 1px solid #ddd;
+
             border-radius: 10px;
+
             font-size: 16px;
+
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #1877f2;
         }
 
         button {
             width: 100%;
+
             padding: 14px;
+
             border: none;
+
             border-radius: 10px;
+
             background: #42b72a;
+
             color: white;
+
             font-size: 16px;
+
             cursor: pointer;
         }
 
@@ -61,15 +86,21 @@
 
         .link {
             display: block;
+
             text-align: center;
+
             margin-top: 20px;
+
             color: #1877f2;
+
             text-decoration: none;
         }
 
         #message {
             text-align: center;
+
             margin-top: 15px;
+
             font-size: 14px;
         }
     </style>
@@ -85,6 +116,13 @@
         type="text"
         id="username"
         placeholder="მომხმარებლის სახელი"
+        maxlength="30"
+    >
+
+    <input
+        type="email"
+        id="email"
+        placeholder="Email"
     >
 
     <input
@@ -99,7 +137,7 @@
         placeholder="გაიმეორე პაროლი"
     >
 
-    <button onclick="register()">
+    <button id="registerButton">
         რეგისტრაცია
     </button>
 
@@ -115,79 +153,221 @@
 
 </div>
 
-<script>
-function register() {
 
-    const username =
-        document.getElementById("username").value.trim();
+<script type="module">
 
-    const password =
-        document.getElementById("password").value;
+    import { initializeApp }
+        from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
 
-    const confirmPassword =
-        document.getElementById("confirmPassword").value;
-
-    const message =
-        document.getElementById("message");
-
-    if (username === "" || password === "" || confirmPassword === "") {
-        message.style.color = "red";
-        message.textContent = "გთხოვ ყველა ველი შეავსო.";
-        return;
+    import {
+        getAuth,
+        createUserWithEmailAndPassword,
+        updateProfile
     }
+    from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
-    if (username.length < 3) {
-        message.style.color = "red";
-        message.textContent =
-            "მომხმარებლის სახელი მინიმუმ 3 სიმბოლო უნდა იყოს.";
-        return;
-    }
 
-    if (password.length < 6) {
-        message.style.color = "red";
-        message.textContent =
-            "პაროლი მინიმუმ 6 სიმბოლო უნდა იყოს.";
-        return;
-    }
+    const firebaseConfig = {
 
-    if (password !== confirmPassword) {
-        message.style.color = "red";
-        message.textContent =
-            "პაროლები ერთმანეთს არ ემთხვევა.";
-        return;
-    }
+        apiKey: "AIzaSyAFkfJ3FPInnW2N0ncFdtJsuUO6mYiottE",
 
-    const users =
-        JSON.parse(localStorage.getItem("chatUsers")) || [];
+        authDomain: "chatapp-74f6c.firebaseapp.com",
 
-    const exists =
-        users.some(user => user.username === username);
+        projectId: "chatapp-74f6c",
 
-    if (exists) {
-        message.style.color = "red";
-        message.textContent =
-            "ეს მომხმარებელი უკვე არსებობს.";
-        return;
-    }
+        storageBucket:
+            "chatapp-74f6c.firebasestorage.app",
 
-    users.push({
-        username: username,
-        password: password
-    });
+        messagingSenderId:
+            "569419761940",
 
-    localStorage.setItem(
-        "chatUsers",
-        JSON.stringify(users)
+        appId:
+            "1:569419761940:web:446d6d1981ebd81d705a01"
+    };
+
+
+    const app = initializeApp(firebaseConfig);
+
+    const auth = getAuth(app);
+
+
+    const registerButton =
+        document.getElementById("registerButton");
+
+
+    registerButton.addEventListener(
+        "click",
+        registerUser
     );
 
-    message.style.color = "green";
-    message.textContent =
-        "ანგარიში წარმატებით შეიქმნა!";
 
-    setTimeout(() => {
-        window.location.href = "login.html";
-    }, 1200);
-}
+    async function registerUser() {
+
+        const username =
+            document
+                .getElementById("username")
+                .value
+                .trim();
+
+        const email =
+            document
+                .getElementById("email")
+                .value
+                .trim();
+
+        const password =
+            document
+                .getElementById("password")
+                .value;
+
+        const confirmPassword =
+            document
+                .getElementById("confirmPassword")
+                .value;
+
+        const message =
+            document.getElementById("message");
+
+
+        message.style.color = "red";
+
+
+        if (
+            username === "" ||
+            email === "" ||
+            password === "" ||
+            confirmPassword === ""
+        ) {
+
+            message.textContent =
+                "გთხოვ ყველა ველი შეავსო.";
+
+            return;
+        }
+
+
+        if (username.length < 3) {
+
+            message.textContent =
+                "მომხმარებლის სახელი მინიმუმ 3 სიმბოლო უნდა იყოს.";
+
+            return;
+        }
+
+
+        if (password.length < 6) {
+
+            message.textContent =
+                "პაროლი მინიმუმ 6 სიმბოლო უნდა იყოს.";
+
+            return;
+        }
+
+
+        if (password !== confirmPassword) {
+
+            message.textContent =
+                "პაროლები ერთმანეთს არ ემთხვევა.";
+
+            return;
+        }
+
+
+        try {
+
+            registerButton.disabled = true;
+
+            registerButton.textContent =
+                "იქმნება ანგარიში...";
+
+
+            const userCredential =
+                await createUserWithEmailAndPassword(
+                    auth,
+                    email,
+                    password
+                );
+
+
+            const user =
+                userCredential.user;
+
+
+            await updateProfile(
+                user,
+                {
+                    displayName: username
+                }
+            );
+
+
+            message.style.color = "green";
+
+            message.textContent =
+                "ანგარიში წარმატებით შეიქმნა!";
+
+
+            setTimeout(() => {
+
+                window.location.href =
+                    "chat.html";
+
+            }, 1200);
+
+
+        } catch (error) {
+
+            console.log(error);
+
+
+            message.style.color = "red";
+
+
+            if (
+                error.code ===
+                "auth/email-already-in-use"
+            ) {
+
+                message.textContent =
+                    "ეს Email უკვე გამოყენებულია.";
+
+            }
+
+            else if (
+                error.code ===
+                "auth/invalid-email"
+            ) {
+
+                message.textContent =
+                    "Email არასწორად არის შეყვანილი.";
+
+            }
+
+            else if (
+                error.code ===
+                "auth/weak-password"
+            ) {
+
+                message.textContent =
+                    "პაროლი ძალიან სუსტია.";
+
+            }
+
+            else {
+
+                message.textContent =
+                    "რეგისტრაცია ვერ მოხერხდა. სცადე თავიდან.";
+
+            }
+
+
+            registerButton.disabled = false;
+
+            registerButton.textContent =
+                "რეგისტრაცია";
+        }
+    }
+
 </script>
 
 </body>
